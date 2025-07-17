@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:14.5
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: pollappnew      # ← points at your new DB
+    ports:
+      - "5432:5432"
+    volumes:
+      - pollappnew-data:/var/lib/postgresql/data  # ← new volume
+
+volumes:
+  pollappnew-data:                            # ← fixed syntax (no trailing “:s”)
