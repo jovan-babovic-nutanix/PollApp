@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
 	"net/http"
 
@@ -10,6 +11,9 @@ import (
 )
 
 func main() {
+	// Parse command-line flags
+	flag.Parse()
+
 	client := db.NewClient()
 	defer client.Close()
 

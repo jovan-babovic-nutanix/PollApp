@@ -4,6 +4,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"flag"
 	"log"
 
 	"pollAppNew/ent"
@@ -13,12 +14,21 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib" // registers "pgx" with database/sql
 )
 
+var (
+	// Declare the -db flag here. Calm’s macro will expand @@{PostgresService.address}@@ into the real IP.
+	dbConnStr = flag.String("db", "", "Postgres connection string")
+)
+
 func NewClient() *ent.Client {
 	// 1) Open the DB using the pgx driver
-	dbConn, err := sql.Open("pgx", "postgres://postgres:postgres@localhost:5432/pollappnew?sslmode=disable")
+	if *dbConnStr == "" {
+		log.Fatal("must pass -db <connection-string>, e.g. -db \"postgres://user:pass@IP:5432/dbname?sslmode=disable\"")
+	}
+	dbConn, err := sql.Open("pgx", *dbConnStr)
 	if err != nil {
 		log.Fatalf("failed opening db: %v", err)
 	}
+
 	// 2) Wrap it for Ent, telling it to use the "postgres" dialect
 	drv := entsql.OpenDB("postgres", dbConn)
 	client := ent.NewClient(ent.Driver(drv))
